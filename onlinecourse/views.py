@@ -146,19 +146,58 @@ def show_exam_result(request, course_id, submission_id):
 
     selected_choices = submission_obj.choices.all()
     selected_ids = []
+    selected_question_ids = set()
+    final_grade = 100
+
+    all_question_exist = \
+         Question.objects.filter(lesson_id=course_id,)
+    print("Numresult" + str(all_question_exist.count()))
 
     for item in selected_choices:
         selected_ids.append(item.id)
+        selected_question_ids.add(item.question_id.id)
 
-    question_obj = get_object_or_404(
-        Question, pk=selected_choices[0].question_id)
-    
-    grade = question_obj.is_get_score(selected_choices)
+    for item in all_question_exist:
+        print("Final Grade : " + str(final_grade))
+        choices_exist = Choice.objects.filter(question_id=item.id,)
+        choices_exist_ids = []
+        grade = True
+        selec_ids = []
+
+        # selec ids for curr question
+        for curr_ch in selected_choices:
+            print(curr_ch.question_id)
+            print(item.id)
+            if curr_ch.question_id.id == item.id:
+                selec_ids.append(curr_ch.id)
+
+        print(selec_ids)
+
+        grade = item.is_get_score(selec_ids)
+        
+        if (not grade):
+            final_grade = final_grade - \
+                    (100 / all_question_exist.count())
+
+        print("Final Grade : " + str(final_grade))
+
+
+    if (final_grade < 1):
+        final_grade = 0
+
+    print(selected_choices)
+    print(selected_choices[0])
+    print(selected_choices[0].question_id)
+    print(selected_choices[0].question_id.id)
+    print("selected choices len:"+str(len(selected_choices)))
+    print("all_question_ids:"+str(len(selected_question_ids)))
+
+    print(str(final_grade))
 
     context = {}
     context['course'] = course_obj
     context['selected_ids'] = selected_ids
-    context['grade'] = grade
+    context['grade'] = round(final_grade, 2)
     return render(request, 'onlinecourse/exam_result_bootstrap.html',
      context)
             
