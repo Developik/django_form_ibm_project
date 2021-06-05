@@ -148,6 +148,7 @@ def show_exam_result(request, course_id, submission_id):
     selected_ids = []
     selected_question_ids = set()
     final_grade = 100
+    choice_structure = []
 
     all_question_exist = \
          Question.objects.filter(lesson_id=course_id,)
@@ -174,6 +175,12 @@ def show_exam_result(request, course_id, submission_id):
         print(selec_ids)
 
         grade = item.is_get_score(selec_ids)
+
+        # 0 is not chosen (correct), 1 is not selected(wrong),
+        # 2 is correct chosen, 3 is incorrect chosen
+
+        
+
         
         if (not grade):
             final_grade = final_grade - \
@@ -186,18 +193,24 @@ def show_exam_result(request, course_id, submission_id):
         final_grade = 0
 
     print(selected_choices)
-    print(selected_choices[0])
-    print(selected_choices[0].question_id)
-    print(selected_choices[0].question_id.id)
+    #print(selected_choices[0])
+    #print(selected_choices[0].question_id)
+    #print(selected_choices[0].question_id.id)
     print("selected choices len:"+str(len(selected_choices)))
     print("all_question_ids:"+str(len(selected_question_ids)))
 
     print(str(final_grade))
 
+    question_structure = []
+    for item in range(len(all_question_exist)):
+        question_structure[item] = [all_question_exist[item],
+        choice_structure[item]]
+
     context = {}
     context['course'] = course_obj
     context['selected_ids'] = selected_ids
     context['grade'] = round(final_grade, 2)
+    context['questions'] = question_structure
     return render(request, 'onlinecourse/exam_result_bootstrap.html',
      context)
             

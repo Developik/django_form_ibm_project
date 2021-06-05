@@ -60,6 +60,17 @@
         <div class="card-columns-vertical mt-1">
             <h5 class="">Exam results</h5>
             <!--HINT Display exam results-->
+            {% for question in questions%}
+            <div class="card">
+                <div style = "background-color : rgba(214,214,214,0.5)">
+                    <p>{{question[0].question_text}}</p>
+                </div>
+                <div class="container">
+                    <h4><b>John Doe</b></h4>
+                    <p>Architect & Engineer</p>
+                </div>
+            </div>
+            {% endfor %}
         </div>
     </div>
 </body>
