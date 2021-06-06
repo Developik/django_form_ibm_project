@@ -25,7 +25,7 @@
                         {% csrf_token %}
                         <div class="input-group">
                             <input type="text" class="form-control" placeholder="Username" name="username" >
-                            <input type="password" class="form-control" placeholder="Username" name="psw" >
+                            <input type="password" class="form-control" placeholder="Password" name="psw" >
                             <button class="btn btn-primary" type="submit">Login</button>
                             <a class="btn btn-link" href="{% url 'onlinecourse:registration' %}">Sign Up</a>
                         </div>
@@ -37,7 +37,7 @@
     </nav>
 
     <!-- Page content -->
-    {% if course_list %}
+    {% if course_list and user.is_authenticated %}
         <div class="container">
             <div class="card-deck">
                 {% for course in course_list %}
@@ -59,7 +59,7 @@
             </div>
         </div>
     {% else %}
-        <p>No courses are available.</p>
+        <p>No courses are available or user haven't logged in.</p>
     {% endif %}
 </body>
 </html>
