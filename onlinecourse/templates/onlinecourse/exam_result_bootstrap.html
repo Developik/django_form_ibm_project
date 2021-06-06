@@ -40,7 +40,7 @@
     <div class="container-fluid">
         {% if grade > 80 %}
         <div class="alert alert-success">
-            <p><strong>Congratulations, User!</strong>
+            <p><strong>Congratulations, {{user}}!</strong>
                 You have passed the exam and completed the course with
                 score {{ grade }} / 100
             </p>
@@ -49,7 +49,7 @@
         {% else %}
         <div class="alert alert-danger">
             <p><strong>Failed</strong>
-                Sorry, User!
+                Sorry, {{user}}!
                 You have failed the exam with
                 score {{ grade }} / 100
             </p>
@@ -63,11 +63,12 @@
             {% for question in questions%}
             <div class="card">
                 <div style = "background-color : rgba(214,214,214,0.5)">
-                    <p>{{question[0].question_text}}</p>
+                    <p>{{question.0.question_text}}</p>
                 </div>
                 <div class="container">
-                    <h4><b>John Doe</b></h4>
-                    <p>Architect & Engineer</p>
+                    {% for choice in question.1 %}
+                    <p style = "color: {{choice.0}};">{{choice.1}}</p>
+                    {% endfor %}
                 </div>
             </div>
             {% endfor %}

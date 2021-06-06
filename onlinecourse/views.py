@@ -158,6 +158,9 @@ def show_exam_result(request, course_id, submission_id):
         selected_ids.append(item.id)
         selected_question_ids.add(item.question_id.id)
 
+    count = 0
+    for item in all_question_exist:
+        choice_structure.append([])
     for item in all_question_exist:
         print("Final Grade : " + str(final_grade))
         choices_exist = Choice.objects.filter(question_id=item.id,)
@@ -172,14 +175,35 @@ def show_exam_result(request, course_id, submission_id):
             if curr_ch.question_id.id == item.id:
                 selec_ids.append(curr_ch.id)
 
+        # 0 is not chosen (correct), black
+        #  1 is not selected(wrong), yellow
+        # 2 is correct chosen, green
+        #  3 is incorrect chosen, red
+
+        for curr_ch in choices_exist:
+
+            if not (curr_ch in selected_choices)\
+                and not curr_ch.is_correct:
+                choice_structure[count].append(
+                    ["black", curr_ch.choice_text])
+            
+            elif not (curr_ch in selected_choices):
+                choice_structure[count].append(
+                    ["rgb(255, 204, 0)", curr_ch.choice_text])
+
+            elif (curr_ch in selected_choices)\
+                and curr_ch.is_correct:
+                choice_structure[count].append(
+                    ["green", curr_ch.choice_text])
+            
+            else:
+                choice_structure[count].append(
+                    ["red", curr_ch.choice_text])
+
         print(selec_ids)
 
-        grade = item.is_get_score(selec_ids)
+        grade = item.is_get_score(selec_ids)        
 
-        # 0 is not chosen (correct), 1 is not selected(wrong),
-        # 2 is correct chosen, 3 is incorrect chosen
-
-        
 
         
         if (not grade):
@@ -188,10 +212,13 @@ def show_exam_result(request, course_id, submission_id):
 
         print("Final Grade : " + str(final_grade))
 
+        count += 1
 
     if (final_grade < 1):
         final_grade = 0
 
+    print('choice_struct:')
+    print(choice_structure)
     print(selected_choices)
     #print(selected_choices[0])
     #print(selected_choices[0].question_id)
@@ -201,16 +228,21 @@ def show_exam_result(request, course_id, submission_id):
 
     print(str(final_grade))
 
+    print("allquestions"+str(len(all_question_exist)))
     question_structure = []
     for item in range(len(all_question_exist)):
+        question_structure.append([])
         question_structure[item] = [all_question_exist[item],
         choice_structure[item]]
+
+    print(question_structure[0][0].question_text)
 
     context = {}
     context['course'] = course_obj
     context['selected_ids'] = selected_ids
     context['grade'] = round(final_grade, 2)
     context['questions'] = question_structure
+    context['user'] = request.user
     return render(request, 'onlinecourse/exam_result_bootstrap.html',
      context)
             
